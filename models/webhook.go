@@ -423,6 +423,7 @@ func CreateHookTask(t *HookTask) error {
 	data, err := t.Payloader.JSONPayload()
 	log.Trace("CreateHookTask: %v", t)
 	log.Trace("data: %v", data)
+
 	if err != nil {
 		return err
 	}
@@ -449,14 +450,18 @@ func prepareWebhooks(repo *Repository, event HookEventType, p api.Payloader, web
 	for _, w := range webhooks {
 		switch event {
 		case HOOK_EVENT_CREATE:
+			log.Info("HOOK_EVENT_CREATE")
 			if !w.HasCreateEvent() {
 				continue
 			}
 		case HOOK_EVENT_PUSH:
+			log.Info("HOOK_EVENT_PUSH")
 			if !w.HasPushEvent() {
+				log.Info("!w.HasPushEvent()")
 				continue
 			}
 		case HOOK_EVENT_PULL_REQUEST:
+			log.Info("HOOK_EVENT_PULL_REQUEST")
 			if !w.HasPullRequestEvent() {
 				continue
 			}

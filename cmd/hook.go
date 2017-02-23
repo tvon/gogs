@@ -62,6 +62,7 @@ var (
 )
 
 func runHookPreReceive(c *cli.Context) error {
+	log.Trace("runHookPreReceive: %v", c)
 	if len(os.Getenv("SSH_ORIGINAL_COMMAND")) == 0 {
 		return nil
 	}
@@ -135,6 +136,7 @@ func runHookPreReceive(c *cli.Context) error {
 }
 
 func runHookUpdate(c *cli.Context) error {
+	log.Trace("runHookUpdate: %v", c)
 	if len(os.Getenv("SSH_ORIGINAL_COMMAND")) == 0 {
 		return nil
 	}
@@ -164,15 +166,18 @@ func runHookUpdate(c *cli.Context) error {
 
 func runHookPostReceive(c *cli.Context) error {
 	if len(os.Getenv("SSH_ORIGINAL_COMMAND")) == 0 {
+		log.Info("SSH_ORIGINAL_COMMAND == 0")
 		return nil
 	}
 	setup(c, "hooks/post-receive.log", true)
+	log.Info("runHookPostReceive fields: %v", c)
 
 	isWiki := strings.Contains(os.Getenv(http.ENV_REPO_CUSTOM_HOOKS_PATH), ".wiki.git/")
 
 	buf := bytes.NewBuffer(nil)
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
+		log.Trace("runHookPostReceive scanner.Scan()")
 		buf.Write(scanner.Bytes())
 		buf.WriteByte('\n')
 
@@ -183,6 +188,7 @@ func runHookPostReceive(c *cli.Context) error {
 
 		fields := bytes.Fields(scanner.Bytes())
 		if len(fields) != 3 {
+			log.Info("runHookPostReceive fields != 3 (%d)", len(fields))
 			continue
 		}
 
@@ -198,6 +204,9 @@ func runHookPostReceive(c *cli.Context) error {
 		if err := models.PushUpdate(options); err != nil {
 			log.Error(2, "PushUpdate: %v", err)
 		}
+
+		log.Trace("OldCommitID: %s", options.OldCommitID)
+		log.Trace("NewCommitID: %s", options.NewCommitID)
 
 		// Ask for running deliver hook and test pull request tasks.
 		reqURL := setting.LocalURL + options.RepoUserName + "/" + options.RepoName + "/tasks/trigger?branch=" +

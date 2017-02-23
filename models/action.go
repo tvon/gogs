@@ -247,6 +247,7 @@ func NewPushCommits() *PushCommits {
 
 func (pc *PushCommits) ToApiPayloadCommits(repoLink string) []*api.PayloadCommit {
 	log.Trace("ToApiPayloadCommits: %v", repoLink)
+	log.Trace("pc = %v", pc)
 	log.Trace("len(pc.Commits) = %d", len(pc.Commits))
 	commits := make([]*api.PayloadCommit, len(pc.Commits))
 	log.Trace("commits = %v", commits)
@@ -512,8 +513,11 @@ func CommitRepoAction(opts CommitRepoActionOptions) error {
 	apiRepo := repo.APIFormat(nil)
 	switch opType {
 	case ACTION_COMMIT_REPO: // Push
+		log.Info("ACTION_COMMIT_REPO")
 		compareURL := setting.AppUrl + opts.Commits.CompareURL
+		log.Info("compareURL: %s", compareURL)
 		if isNewBranch {
+			log.Info("isNewBranch")
 			compareURL = ""
 			if err = PrepareWebhooks(repo, HOOK_EVENT_CREATE, &api.CreatePayload{
 				Ref:     refName,
@@ -525,6 +529,7 @@ func CommitRepoAction(opts CommitRepoActionOptions) error {
 			}
 		}
 
+		log.Info("calling PrepareWebhooks")
 		if err = PrepareWebhooks(repo, HOOK_EVENT_PUSH, &api.PushPayload{
 			Ref:        opts.RefFullName,
 			Before:     opts.OldCommitID,
@@ -535,6 +540,7 @@ func CommitRepoAction(opts CommitRepoActionOptions) error {
 			Pusher:     apiPusher,
 			Sender:     apiPusher,
 		}); err != nil {
+			log.Trace("PrepareWebhooks (new commit): %v", err)
 			return fmt.Errorf("PrepareWebhooks (new commit): %v", err)
 		}
 
