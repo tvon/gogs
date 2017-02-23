@@ -14,6 +14,7 @@ import (
 
 	git "github.com/gogits/git-module"
 	api "github.com/gogits/go-gogs-client"
+	log "gopkg.in/clog.v1"
 
 	"github.com/gogits/gogs/models"
 	"github.com/gogits/gogs/modules/auth"
@@ -29,6 +30,8 @@ const (
 )
 
 func Webhooks(ctx *context.Context) {
+	log.Trace("Webhooks: ctx = %v", ctx)
+
 	ctx.Data["Title"] = ctx.Tr("repo.settings.hooks")
 	ctx.Data["PageIsSettingsHooks"] = true
 	ctx.Data["BaseLink"] = ctx.Repo.RepoLink

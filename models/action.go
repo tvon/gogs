@@ -246,8 +246,13 @@ func NewPushCommits() *PushCommits {
 }
 
 func (pc *PushCommits) ToApiPayloadCommits(repoLink string) []*api.PayloadCommit {
+	log.Trace("ToApiPayloadCommits: %v", repoLink)
+	log.Trace("len(pc.Commits) = %d", len(pc.Commits))
 	commits := make([]*api.PayloadCommit, len(pc.Commits))
+	log.Trace("commits = %v", commits)
+
 	for i, commit := range pc.Commits {
+		log.Trace("looping %d = %v", i, commit)
 		authorUsername := ""
 		author, err := GetUserByEmail(commit.AuthorEmail)
 		if err == nil {
@@ -437,6 +442,8 @@ type CommitRepoActionOptions struct {
 
 // CommitRepoAction adds new commit actio to the repository, and prepare corresponding webhooks.
 func CommitRepoAction(opts CommitRepoActionOptions) error {
+	log.Trace("CommitRepoAction: %v", opts)
+
 	pusher, err := GetUserByName(opts.PusherName)
 	if err != nil {
 		return fmt.Errorf("GetUserByName [%s]: %v", opts.PusherName, err)

@@ -421,6 +421,8 @@ func HookTasks(hookID int64, page int) ([]*HookTask, error) {
 // it handles conversion from Payload to PayloadContent.
 func CreateHookTask(t *HookTask) error {
 	data, err := t.Payloader.JSONPayload()
+	log.Trace("CreateHookTask: %v", t)
+	log.Trace("data: %v", data)
 	if err != nil {
 		return err
 	}
@@ -438,6 +440,7 @@ func UpdateHookTask(t *HookTask) error {
 
 // prepareWebhooks adds list of webhooks to task queue.
 func prepareWebhooks(repo *Repository, event HookEventType, p api.Payloader, webhooks []*Webhook) (err error) {
+	log.Trace("prepareWebhooks: %v", p)
 	if len(webhooks) == 0 {
 		return nil
 	}
@@ -495,6 +498,7 @@ func prepareWebhooks(repo *Repository, event HookEventType, p api.Payloader, web
 // PrepareWebhooks adds all active webhooks to task queue.
 func PrepareWebhooks(repo *Repository, event HookEventType, p api.Payloader) error {
 	webhooks, err := GetActiveWebhooksByRepoID(repo.ID)
+	log.Trace("webhooks: %v", webhooks)
 	if err != nil {
 		return fmt.Errorf("GetActiveWebhooksByRepoID [%d]: %v", repo.ID, err)
 	}
